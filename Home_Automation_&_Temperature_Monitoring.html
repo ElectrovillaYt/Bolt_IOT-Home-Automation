@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Boltiot_Home-Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="text-center mb-4" style="background-color: black; color: aliceblue;">
+        <p class="h1 mb-3">Home Automation & Temperature Monitoring</p>
+    </div>
+
+    <div class="container text-center">
+
+        <!-- Switch 1 -->
+        <div class="mb-3">
+            <div class="row">
+                <div class=" form-switch col">
+                    <label style="font-size: larger; font-weight: bold;" class="col">Switch
+                        1</label>
+                </div>
+                <div class="col">
+                    <button class="btn btn-success btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_1_on()"> Switch 1 ON
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger btn-lg" style="font-weight: bold;" style="font-weight: bold;"
+                        type="button" onclick="switch_1_off()"> Switch 1 OFF </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Switch 2 -->
+        <div class="mb-3">
+            <div class="row">
+                <div class=" form-switch col">
+                    <label style="font-size: larger; font-weight: bold;" class="col">Switch
+                        2</label>
+                </div>
+                <div class="col">
+                    <button class="btn btn-success btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_2_on()"> Switch 2 ON
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_2_off()"> Switch 2 OFF </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Switch 3 -->
+        <div class="mb-3">
+            <div class="row">
+                <div class=" form-switch col">
+                    <label style="font-size: larger; font-weight: bold;" class="col">Switch
+                        3</label>
+                </div>
+                <div class="col">
+                    <button class="btn btn-success btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_3_on()"> Switch 3 ON
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_3_off()"> Switch 3 OFF </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Switch 4 -->
+        <div class="mb-3">
+            <div class="row">
+                <div class=" form-switch col">
+                    <label style="font-size: larger; font-weight: bold;" class="col">Switch
+                        4</label>
+                </div>
+                <div class="col">
+                    <button class="btn btn-success btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_4_on()"> Switch 4 ON
+                    </button>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger btn-lg" style="font-weight: bold;" type="button"
+                        onclick="switch_4_off()"> Switch 4 OFF </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperature Section -->
+        <div class="mb-4">
+            <div class="row">
+                <div class="col">
+                    <label class="form-label label" for="temp_value" style="font-weight: bold; font-size:larger;">Room
+                        Temperature Value in °C</label>
+                </div>
+                <div class="col">
+                    <input type="text" role="cell" id="temp_value" style="font-weight: bold; font-size:larger;"
+                        aria-label="readonly temperature value" readonly>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary btn-lg" style="font-weight: bold;" type="button" id="get_time"
+                        onclick="temperature_out()">
+                        Get Temperature</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function temperature_out() {        // function for Getting temperature every 5 sec if button is pressed.
+            var temp_in = new XMLHttpRequest();
+            temp_in.open('GET', ''); // add you API key for pin A0 (Temperature Sensor) in ''
+            temp_in.send();
+            temp_in.onreadystatechange = function () {
+                if (temp_in.readyState == 4 && temp_in.status == 200) {
+                    var obj = JSON.stringify(temp_in.response).substring(15, 18);
+                    var temperature_value = parseInt(obj)
+                    var temperature = (temperature_value * 0.0977).toFixed(2);
+                    var get_time = document.getElementById("get_time");
+                    document.getElementById("temp_value").value = temperature + "°C";
+
+                    if (temperature >= 40 && temperature > 60) {
+                        document.getElementById("get_time").style.backgroundColor = "#FFEA33"
+                        document.getElementById("get_time").style.color = "#000000"
+                    }
+                    else if (temperature >= 60 && temperature > 80) {
+                        document.getElementById("get_time").style.backgroundColor = "#FFC633"
+                        document.getElementById("get_time").style.color = "#000000"
+                    }
+                    else if (temperature >= 80 && temperature < 100) {
+                        document.getElementById("get_time").style.backgroundColor = "#FF9C33"
+                        document.getElementById("get_time").style.color = "#000000"
+                    }
+                    else if (temperature >= 100) {
+                        document.getElementById("get_time").style.backgroundColor = "#FF3333"
+                        document.getElementById("get_time").style.color = "#ffffff"
+                    }
+
+                    var get_time_button = document.getElementById("get_time");
+                    let countdown = 0;
+                    function disableButton() {
+                        get_time_button.disabled = true;
+                        get_time_button.innerHTML = "Wait 5 seconds";
+
+                        countdown = setInterval(function () {
+                            let count = parseInt(get_time_button.innerHTML.split(" ")[1]);
+                            count--;
+
+                            if (count === 0) {
+                                clearInterval(countdown);
+                                get_time_button.disabled = false;
+                                get_time_button.innerHTML = "Get temperature";
+                            } else {
+                                get_time.innerHTML = "Wait " + count + " seconds";
+                            }
+                        }, 1000);
+
+                        setTimeout(function () {
+                            clearInterval(countdown);
+                            get_time_button.disabled = false;
+                            get_time_button.innerHTML = "Get temperature";
+                        }, 30000);
+
+
+                    }
+                    disableButton();
+                }
+            }
+        }
+
+        // Functions For Switch 1 ON and OFF
+        function switch_1_on() {
+            var switch1_state_HIGH = new XMLHttpRequest();
+            switch1_state_HIGH.open("GET", '');// add you API key for pin D0 ON/HIGH (Switch1 ON) in ''
+            switch1_state_HIGH.send();
+        }
+        function switch_1_off() {
+            var switch1_state_LOW = new XMLHttpRequest();
+            switch1_state_LOW.open("GET", '');      // add you API key for pin D0 OFF/LOW (Switch1 OFF) in ''
+            switch1_state_LOW.send();
+        }
+
+        // Functions For Switch 2 ON and OFF
+        function switch_2_on() {
+            var switch2__state_HIGH = new XMLHttpRequest();
+            switch2__state_HIGH.open('GET', '');        // add you API key for pin D1 ON/HIGH (Switch2 ON) in ''
+            switch2__state_HIGH.send();
+
+        }
+        function switch_2_off() {
+            var switch2_state_LOW = new XMLHttpRequest();
+            switch2_state_LOW.open('GET', '');      // add you API key for pin D1 OFF/LOW (Switch2 OFF) in ''
+            switch2_state_LOW.send();
+        }
+
+        // Functions For Switch 3 ON and OFF
+        function switch_3_on() {
+            var switch3_state_HIGH = new XMLHttpRequest();
+            switch3_state_HIGH.open('GET', '');     // add you API key for pin D2 ON/HIGH (Switch3 ON) in ''
+            switch3_state_HIGH.send();
+        }
+        function switch_3_off() {
+            var switch3_state_LOW = new XMLHttpRequest();
+            switch3_state_LOW.open('GET', '');      // add you API key for pin D2 OFF/LOW (Switch3 OFF) in ''
+            switch3_state_LOW.send();
+        }
+
+        // Functions For Switch 4 ON and OFF
+        function switch_4_on() {
+            var switch4_state_HIGH = new XMLHttpRequest();
+            switch4_state_HIGH.open('GET', '');        // add you API key for pin D3 ON/HIGH (Switch4 ON) in ''
+            switch4_state_HIGH.send();
+        }
+        function switch_4_off() {
+            var switch4_state_LOW = new XMLHttpRequest();
+            switch4_state_LOW.open('GET', '');        // add you API key for pin D3 OFF/LOW (Switch4 OFF) in ''
+            switch4_state_LOW.send();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
